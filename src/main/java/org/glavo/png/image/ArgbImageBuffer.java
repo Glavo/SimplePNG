@@ -1,4 +1,4 @@
-package org.glavo.png;
+package org.glavo.png.image;
 
 public final class ArgbImageBuffer implements ArgbImage {
     private final int width;
@@ -26,7 +26,7 @@ public final class ArgbImageBuffer implements ArgbImage {
     }
 
     @Override
-    public int getColor(int x, int y) {
+    public int getArgb(int x, int y) {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             throw new IllegalArgumentException();
         }
@@ -34,7 +34,7 @@ public final class ArgbImageBuffer implements ArgbImage {
         return colors[x + y * width];
     }
 
-    public void setColor(int x, int y, int color) {
+    public void setArgb(int x, int y, int color) {
         if (x < 0 || x >= width || y < 0 || y >= height) {
             throw new IllegalArgumentException();
         }

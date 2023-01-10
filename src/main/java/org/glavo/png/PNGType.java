@@ -1,21 +1,17 @@
 package org.glavo.png;
 
 public enum PNGType {
-    PNG_GRAYSCALE(0, 1),
-    PNG_RGB(2, 3),
-    PNG_PALETTE(3, 1),
-    PNG_GRAYSCALE_ALPHA(4, 2),
-    PNG_RGBA(6, 4);
+    GRAYSCALE(0, 1),
+    RGB(2, 3),
+    PALETTE(3, 1),
+    GRAYSCALE_ALPHA(4, 2),
+    RGBA(6, 4);
 
-    private final int type;
-    private final int bpp;
+    final int id;
+    final int cpp;
 
-    PNGType(int type, int bpp) {
-        this.type = type;
-        this.bpp = bpp;
-    }
-
-    public int getType() {
-        return type;
+    PNGType(int id, int cpp) {
+        this.id = id;
+        this.cpp = cpp;
     }
 }
