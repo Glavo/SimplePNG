@@ -1,8 +1,5 @@
 package org.glavo.png;
 
-/**
- * The type of PNG image. It determines how the pixels are stored.
- */
 public enum PNGType {
     PNG_GRAYSCALE(0, 1),
     PNG_RGB(2, 3),
