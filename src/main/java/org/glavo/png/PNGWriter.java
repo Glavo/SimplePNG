@@ -1,8 +1,14 @@
 package org.glavo.png;
 
+import org.glavo.png.image.AWTArgbImageWrapper;
 import org.glavo.png.image.ArgbImage;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
@@ -14,6 +20,7 @@ public final class PNGWriter implements Closeable {
     };
 
     private static final byte[] UNCOMPRESSED_CHUNK_HEADER = {0x78, (byte) 0xDA, 0x01};
+    private static final int MAX_BLOCK_SIZE = 32 * 1024;
 
     private final OutputStream out;
     private final PNGType type;
@@ -60,6 +67,10 @@ public final class PNGWriter implements Closeable {
 
     public int getCompressLevel() {
         return compressLevel;
+    }
+
+    private static int divRoundUp(int x, int y) {
+        return (x + y - 1) / y;
     }
 
     private void writeByte(int b) throws IOException {
@@ -143,54 +154,62 @@ public final class PNGWriter implements Closeable {
         writeByte(0); // interlace method
         endChunk();
 
-
         // IDAT Chunk
         int colorPerPixel = type.cpp;
         int bytesPerLine = 1 + colorPerPixel * width;
         int outputRawSize = height * bytesPerLine;
 
-        if (outputRawSize >= 65536) {
-            throw new IllegalArgumentException("Too large image");
-        }
+        int blockSize = MAX_BLOCK_SIZE - (MAX_BLOCK_SIZE % bytesPerLine);
+        int numBlocks = divRoundUp(outputRawSize, blockSize);
+
+        System.out.println("blockSize=" + blockSize);
+        System.out.println("numBlocks=" + numBlocks);
 
         if (compressLevel == 0) {
             Adler32 adler32 = new Adler32();
             byte[] lineBuffer = new byte[bytesPerLine];
 
-            beginChunk("IDAT", outputRawSize + 11);
-            writeBytes(UNCOMPRESSED_CHUNK_HEADER);
+            for (int blockIndex = 0; blockIndex < numBlocks; blockIndex++) {
+                int len = Integer.min(outputRawSize - (blockIndex * blockSize), blockSize);
+                int nlen = len ^ 0xFFFF;
 
-            int len = outputRawSize;
-            int nlen = outputRawSize ^ 0xFFFF;
+                System.out.println("len=" + len);
 
-            writeBuffer[0] = (byte) (len >>> 0);
-            writeBuffer[1] = (byte) (len >>> 8);
-            writeBuffer[2] = (byte) (nlen >>> 0);
-            writeBuffer[3] = (byte) (nlen >>> 8);
-            writeBytes(writeBuffer, 0, 4);
+                int beginLine = (blockIndex * blockSize) / bytesPerLine;
+                int endLine = beginLine + (len / bytesPerLine);
 
-            for (int y = 0; y < height; y++) {
-                lineBuffer[0] = 0;
-                for (int x = 0; x < width; x++) {
-                    int color = image.getArgb(x, y);
-                    int off = 1 + colorPerPixel * x;
+                beginChunk("IDAT", len + 11);
+                writeBytes(UNCOMPRESSED_CHUNK_HEADER);
 
-                    lineBuffer[off + 0] = (byte) (color >>> 24);
-                    lineBuffer[off + 1] = (byte) (color >>> 16);
-                    lineBuffer[off + 2] = (byte) (color >>> 8);
-                    if (colorPerPixel == 4)
-                        lineBuffer[off + 3] = (byte) (color >>> 0);
+                writeBuffer[0] = (byte) (len >>> 0);
+                writeBuffer[1] = (byte) (len >>> 8);
+                writeBuffer[2] = (byte) (nlen >>> 0);
+                writeBuffer[3] = (byte) (nlen >>> 8);
+                writeBytes(writeBuffer, 0, 4);
+
+                adler32.reset();
+                for (int y = beginLine; y < endLine; y++) {
+                    for (int x = 0; x < width; x++) {
+                        int color = image.getArgb(x, y);
+
+                        int off = 1 + colorPerPixel * x;
+                        lineBuffer[off + 0] = (byte) (color >>> 16);
+                        lineBuffer[off + 1] = (byte) (color >>> 8);
+                        lineBuffer[off + 2] = (byte) (color >>> 0);
+                        if (colorPerPixel == 4)
+                            lineBuffer[off + 3] = (byte) (color >>> 24);
+                    }
+                    writeBytes(lineBuffer, 0, bytesPerLine);
+                    adler32.update(lineBuffer, 0, bytesPerLine);
                 }
-                writeBytes(lineBuffer, 0, bytesPerLine);
-                adler32.update(lineBuffer, 0, bytesPerLine);
-            }
 
-            int checksum = (int) adler32.getValue();
-            writeInt(checksum);
+                writeInt((int) adler32.getValue());
+                endChunk();
+            }
         } else {
             throw new UnsupportedOperationException(); // TODO
         }
-        endChunk();
+
 
         // IEND Chunk
         beginChunk("IEND", 0);
@@ -200,5 +219,12 @@ public final class PNGWriter implements Closeable {
     @Override
     public void close() throws IOException {
         out.close();
+    }
+
+    public static void dumpImage(String input, String output) throws IOException {
+        BufferedImage img = ImageIO.read(new File(input));
+        try (PNGWriter writer = new PNGWriter(Files.newOutputStream(Paths.get(output)))) {
+            writer.write(new AWTArgbImageWrapper(img));
+        }
     }
 }
