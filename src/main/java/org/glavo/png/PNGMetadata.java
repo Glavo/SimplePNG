@@ -1,8 +1,9 @@
 package org.glavo.png;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.nio.file.attribute.FileTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -69,18 +70,23 @@ public final class PNGMetadata implements Serializable {
         return this;
     }
 
-    public PNGMetadata setCreationTime(Date date) {
-        setCreationTime(date.toString());
+    public PNGMetadata setCreationTime(LocalDateTime time) {
+        setCreationTime(ZonedDateTime.of(time, ZoneOffset.UTC).toOffsetDateTime());
         return this;
     }
 
-    public PNGMetadata setCreationTime(LocalDateTime time) {
-        setCreationTime(Date.from(time.atZone(ZoneId.systemDefault()).toInstant()));
+    public PNGMetadata setCreationTime(OffsetDateTime time) {
+        setCreationTime(time.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+        return this;
+    }
+
+    public PNGMetadata setCreationTime(FileTime time) {
+        setCreationTime(ZonedDateTime.ofInstant(time.toInstant(), ZoneOffset.UTC).toOffsetDateTime());
         return this;
     }
 
     public PNGMetadata setCreationTime() {
-        setCreationTime(new Date());
+        setCreationTime(LocalDateTime.now());
         return this;
     }
 

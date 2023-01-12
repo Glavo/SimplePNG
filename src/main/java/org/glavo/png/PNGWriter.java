@@ -131,8 +131,6 @@ public final class PNGWriter implements Closeable {
     }
 
     private void textChunk(String keyword, String text) throws IOException {
-        if (text == null) return;
-
         byte[] keywordBytes = keyword.getBytes(StandardCharsets.US_ASCII);
         byte[] textBytes = text.getBytes(StandardCharsets.UTF_8);
         int textBytesLength = textBytes.length;

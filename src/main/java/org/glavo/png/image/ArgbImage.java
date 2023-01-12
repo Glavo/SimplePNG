@@ -4,14 +4,6 @@ import org.glavo.png.PNGMetadata;
 
 public interface ArgbImage {
 
-    static int argb(int a, int r, int g, int b) {
-        return ((r << 16) | ((g) << 8) | ((b)) | ((a) << 24));
-    }
-
-    static int rgb(int r, int g, int b) {
-        return argb(-1, r, g, b);
-    }
-
     int getWidth();
 
     int getHeight();

@@ -1,6 +1,10 @@
 package org.glavo.png;
 
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.common.ImageMetadata;
+import org.apache.commons.imaging.formats.png.PngImageParser;
 import org.glavo.png.image.AWTArgbImageWrapper;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -9,6 +13,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Stream;
 import java.util.zip.Deflater;
@@ -20,7 +25,8 @@ public class PNGWriterTest {
     private record Argument(String file, PNGType pngType, int compressLevel) {
     }
 
-    private static final String[] testFiles = {"minecraft.png", "skin.png", "background.jpg"};
+    private static final String defaultTestFile = "minecraft.png";
+    private static final String[] testFiles = {defaultTestFile, "skin.png", "background.jpg"};
 
     private static Stream<Argument> testFiles() {
         return Arrays.stream(testFiles)
@@ -39,7 +45,7 @@ public class PNGWriterTest {
 
     @ParameterizedTest
     @MethodSource("testFiles")
-    public void writeArgbFile(Argument arg) throws Exception {
+    public void testWriteArgbFile(Argument arg) throws Exception {
         BufferedImage sourceImage = ImageIO.read(PNGWriterTest.class.getResource(arg.file));
 
         BufferedImage targetImage;
@@ -69,9 +75,23 @@ public class PNGWriterTest {
                 if (arg.pngType != PNGType.RGB) {
                     assertEquals((byte) (sourceColor >>> 24), (byte) (targetColor >>> 24));
                 } else {
-                    assertEquals((byte) -1, (byte) (targetColor >>> 24));
+                    assertEquals((byte) 0xFF, (byte) (targetColor >>> 24));
                 }
             }
         }
+    }
+
+    @Test
+    public void testMetadata() throws IOException, ImageReadException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (PNGWriter writer = new PNGWriter(out)) {
+            PNGMetadata metadata = new PNGMetadata()
+                    .setCreationTime();
+            writer.write(new AWTArgbImageWrapper(ImageIO.read(PNGWriterTest.class.getResource(defaultTestFile))));
+        }
+
+        byte[] image = out.toByteArray();
+        ImageMetadata metadata = new PngImageParser().getMetadata(image);
+        assertNotNull(metadata);
     }
 }
