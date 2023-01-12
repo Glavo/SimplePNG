@@ -6,12 +6,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 public final class PNGWriter implements Closeable {
+    private static final int COMPRESS_THRESHOLD = 20;
     private static final byte[] PNG_FILE_HEADER = {
             (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A
     };
@@ -127,7 +130,72 @@ public final class PNGWriter implements Closeable {
         out.write(writeBuffer, 0, 4);
     }
 
+    private void textChunk(String keyword, String text) throws IOException {
+        if (text == null) return;
+
+        byte[] keywordBytes = keyword.getBytes(StandardCharsets.US_ASCII);
+        byte[] textBytes = text.getBytes(StandardCharsets.UTF_8);
+        int textBytesLength = textBytes.length;
+
+        boolean isAscii = text.length() == textBytesLength;
+
+        boolean compress = compressLevel != 0 && textBytesLength >= COMPRESS_THRESHOLD;
+
+        if (compress) {
+            byte[] compressed = new byte[textBytesLength];
+
+            deflater.reset();
+            deflater.setInput(textBytes);
+            deflater.finish();
+
+            int len = deflater.deflate(compressed, 0, textBytesLength, Deflater.SYNC_FLUSH);
+            if (len < textBytesLength) {
+                textBytes = compressed;
+                textBytesLength = len;
+            } else {
+                compress = false;
+                deflater.reset();
+            }
+        }
+
+
+        String chunkType;
+        int separatorLength;
+
+        if (isAscii) {
+            if (compress) {
+                chunkType = "zTXt";
+                separatorLength = 2;
+
+                writeBuffer[0] = 0; // null separator
+                writeBuffer[1] = 0; // compression method
+
+            } else {
+                chunkType = "tEXt";
+                separatorLength = 1;
+
+                writeBuffer[0] = 0; // null separator
+            }
+        } else {
+            chunkType = "iTXt";
+            separatorLength = 5;
+
+            writeBuffer[0] = 0;     // null separator
+            writeBuffer[1] = (byte) (compress ? 1 : 0); // compression flag
+            writeBuffer[2] = 0;     // compression method
+            writeBuffer[3] = 0;     // null separator
+            writeBuffer[4] = 0;     // null separator
+        }
+
+        beginChunk(chunkType, keywordBytes.length + separatorLength + textBytesLength);
+        writeBytes(keywordBytes);
+        writeBytes(writeBuffer, 0, separatorLength);
+        writeBytes(textBytes, 0, textBytesLength);
+        endChunk();
+    }
+
     public void write(ArgbImage image) throws IOException {
+        PNGMetadata metadata = image.getMetadata();
         final int width = image.getWidth();
         final int height = image.getHeight();
 
@@ -150,6 +218,7 @@ public final class PNGWriter implements Closeable {
         int rawOutputSize = bytesPerLine * height;
         byte[] lineBuffer = new byte[bytesPerLine];
 
+        deflater.reset();
         OutputBuffer buffer = new OutputBuffer(compressLevel == 0 ? rawOutputSize + 12 : rawOutputSize / 2);
         try (DeflaterOutputStream dos = new DeflaterOutputStream(buffer, deflater)) {
             for (int y = 0; y < height; y++) {
@@ -173,6 +242,12 @@ public final class PNGWriter implements Closeable {
         writeBytes(buffer.getBuffer(), 0, len);
         endChunk();
 
+        if (metadata != null) {
+            for (Map.Entry<String, String> entry : metadata.texts.entrySet()) {
+                textChunk(entry.getKey(), entry.getValue());
+            }
+        }
+
         // IEND Chunk
         beginChunk("IEND", 0);
         endChunk();
@@ -180,6 +255,7 @@ public final class PNGWriter implements Closeable {
 
     @Override
     public void close() throws IOException {
+        deflater.end();
         out.close();
     }
 
