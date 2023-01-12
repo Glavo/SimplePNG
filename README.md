@@ -20,7 +20,19 @@ A zero-dependency minimalist Java library for creating PNG files.
 
 ## Adding SimplePNG to your build
 
-Under development, I will publish it to Maven Central in the next two days.
+Maven:
+```xml
+<dependency>
+  <groupId>org.glavo.kala</groupId>
+  <artifactId>simple-png</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
+
+Gradle:
+```kotlin
+implementation("org.glavo.kala:simple-png:0.1.0")
+```
 
 ## Examples
 
