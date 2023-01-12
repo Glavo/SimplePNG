@@ -45,6 +45,8 @@ of true color images and the [`PNGWriter`](src/main/java/org/glavo/png/PNGWriter
 This is a simple example:
 
 ```java
+int rgba(int r,int g,int b,int a) { return ((r << 16) | ((g) << 8) | ((b)) | ((a) << 24)); }
+
 ArgbImage image = new ArgbImage() {
     public int getWidth() { return 250; }
     public int getHeight() { return 250; }

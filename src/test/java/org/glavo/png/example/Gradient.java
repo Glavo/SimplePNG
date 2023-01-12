@@ -12,7 +12,7 @@ public class Gradient {
         ArgbImageBuffer buffer = new ArgbImageBuffer(250, 250);
         for (int x = 0; x < 250; x++) {
             for (int y = 0; y < 250; y++) {
-                buffer.setArgb(x, y, (255 - ((x / 2) & 255)), x & 255, y & 255, 128);
+                buffer.setArgb(x, y, 255 - ((x / 2) & 255), x & 255, y & 255, 128);
             }
         }
 
