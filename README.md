@@ -55,7 +55,7 @@ try (PNGWriter writer = new PNGWriter(Files.newOutputStream(Paths.get("gradient.
 
 Result:
 
-![](image/example-1.png)
+![gradient.png](image/example-1.png)
 
 In addition to directly implementing the `ArgbImage` interface, 
 SimplePNG also has some `ArgbImage` built-in implementations to facilitate you to interact with Java AWT/JavaFX or draw pictures.
