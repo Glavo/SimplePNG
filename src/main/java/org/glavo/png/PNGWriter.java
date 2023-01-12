@@ -63,10 +63,6 @@ public final class PNGWriter implements Closeable {
         return compressLevel;
     }
 
-    private static int divRoundUp(int x, int y) {
-        return (x + y - 1) / y;
-    }
-
     private void writeByte(int b) throws IOException {
         out.write(b);
         crc32.update(b);
