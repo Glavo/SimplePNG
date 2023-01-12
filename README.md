@@ -63,7 +63,7 @@ Result:
 In addition to directly implementing the `ArgbImage` interface, 
 SimplePNG also has some `ArgbImage` built-in implementations to facilitate you to interact with Java AWT/JavaFX or draw pictures.
 
-```
+```java
 // Array-based writable image
 ArgbImageBuffer buffer = new ArgbImageBuffer();
 for (int x = 0; x < 250; x++) {
