@@ -13,7 +13,7 @@ A zero-dependency minimalist Java library for creating PNG files.
 ## Limitations 
 
 * Currently only true color images are supported, support for grayscale images is planned;
-* Currently only 8-bit color depth images are supported;
+* Currently only 8bpc images are supported;
 * PNG filter is not supported, it may be supported in the future;
 * Color palette is not supported;
 
