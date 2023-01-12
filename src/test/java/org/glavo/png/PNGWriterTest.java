@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.stream.Stream;
 import java.util.zip.Deflater;
@@ -86,8 +87,10 @@ public class PNGWriterTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try (PNGWriter writer = new PNGWriter(out)) {
             PNGMetadata metadata = new PNGMetadata()
-                    .setCreationTime();
-            writer.write(new AWTArgbImageWrapper(ImageIO.read(PNGWriterTest.class.getResource(defaultTestFile))));
+                    .setCreationTime(LocalDateTime.of(2023, 1, 12, 12, 0))
+                    .setAuthor("Glavo");
+            writer.write(new AWTArgbImageWrapper(ImageIO.read(PNGWriterTest.class.getResource(defaultTestFile)))
+                    .withMetadata(metadata));
         }
 
         byte[] image = out.toByteArray();
