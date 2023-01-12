@@ -2,6 +2,9 @@
 
 A zero-dependency minimalist Java library for creating PNG files.
 
+It is implemented in pure Java and independent of Java AWT (ImageIO).
+It can be easily used with Android or JavaFX.
+
 ## Feature
 
 * Support for Java 8+;
