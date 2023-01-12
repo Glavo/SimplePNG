@@ -151,11 +151,11 @@ public final class PNGWriter implements Closeable {
         // IDAT Chunk
         int colorPerPixel = type.cpp;
         int bytesPerLine = 1 + colorPerPixel * width;
+        int rawOutputSize = bytesPerLine * height;
+        byte[] lineBuffer = new byte[bytesPerLine];
 
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        OutputBuffer buffer = new OutputBuffer(compressLevel == 0 ? rawOutputSize + 12 : rawOutputSize / 2);
         try (DeflaterOutputStream dos = new DeflaterOutputStream(buffer, deflater)) {
-            byte[] lineBuffer = new byte[bytesPerLine];
-
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     int color = image.getArgb(x, y);
@@ -172,9 +172,9 @@ public final class PNGWriter implements Closeable {
             }
         }
 
-        byte[] ba = buffer.toByteArray();
-        beginChunk("IDAT", ba.length);
-        writeBytes(ba);
+        int len = buffer.size();
+        beginChunk("IDAT", len);
+        writeBytes(buffer.getBuffer(), 0, len);
         endChunk();
 
         // IEND Chunk
@@ -185,5 +185,18 @@ public final class PNGWriter implements Closeable {
     @Override
     public void close() throws IOException {
         out.close();
+    }
+
+    private static final class OutputBuffer extends ByteArrayOutputStream {
+        public OutputBuffer() {
+        }
+
+        public OutputBuffer(int size) {
+            super(size);
+        }
+
+        byte[] getBuffer() {
+            return super.buf;
+        }
     }
 }
