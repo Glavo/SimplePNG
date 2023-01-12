@@ -76,7 +76,7 @@ for (int x = 0; x < 250; x++) {
 ArgbImage awtImage = new AWTArgbImageWrapper(ImageIO.read("image.jpg"));
 
 // Wrapper for javafx.scene.image.Image
-ArgbImage fxImage = new AWTArgbImageWrapper(new Image("image.jpg"));
+ArgbImage fxImage = new JavaFXArgbImageWrapper(new Image("image.jpg"));
 ```
 
 ### `PNGWriter`
