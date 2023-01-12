@@ -10,6 +10,10 @@ tasks.compileJava {
     options.release.set(8)
 }
 
+tasks.compileTestJava {
+    options.release.set(17)
+}
+
 repositories {
     mavenCentral()
 }
@@ -18,6 +22,7 @@ dependencies {
     compileOnly("org.openjfx:javafx-graphics:17:linux") // For javafx.scene.image
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 }
 
