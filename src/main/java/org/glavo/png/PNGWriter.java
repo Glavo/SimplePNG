@@ -210,6 +210,12 @@ public final class PNGWriter implements Closeable {
         writeByte(0); // interlace method
         endChunk();
 
+        if (metadata != null) {
+            for (Map.Entry<String, String> entry : metadata.texts.entrySet()) {
+                textChunk(entry.getKey(), entry.getValue());
+            }
+        }
+
         // IDAT Chunk
         int colorPerPixel = type.cpp;
         int bytesPerLine = 1 + colorPerPixel * width;
@@ -239,12 +245,6 @@ public final class PNGWriter implements Closeable {
         beginChunk("IDAT", len);
         writeBytes(buffer.getBuffer(), 0, len);
         endChunk();
-
-        if (metadata != null) {
-            for (Map.Entry<String, String> entry : metadata.texts.entrySet()) {
-                textChunk(entry.getKey(), entry.getValue());
-            }
-        }
 
         // IEND Chunk
         beginChunk("IEND", 0);
