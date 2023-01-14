@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "org.glavo"
-version = "0.1.0" //+ "-SNAPSHOT"
+version = "0.1.1"// + "-SNAPSHOT"
 description = "Minimal library for creating PNG images"
 
 java {
