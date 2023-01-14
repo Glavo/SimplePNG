@@ -130,6 +130,8 @@ public final class PNGWriter implements Closeable {
         out.write(writeBuffer, 0, 4);
     }
 
+    private static final byte[] textSeparator = {0};
+
     private void textChunk(String keyword, String text) throws IOException {
         byte[] keywordBytes = keyword.getBytes(StandardCharsets.US_ASCII);
         byte[] textBytes = text.getBytes(StandardCharsets.UTF_8);
@@ -158,36 +160,36 @@ public final class PNGWriter implements Closeable {
 
 
         String chunkType;
-        int separatorLength;
+
+        byte[] separator;
 
         if (isAscii) {
             if (compress) {
                 chunkType = "zTXt";
-                separatorLength = 2;
-
-                writeBuffer[0] = 0; // null separator
-                writeBuffer[1] = 0; // compression method
-
+                separator = new byte[]{
+                        0, // null separator
+                        0  // compression method
+                };
             } else {
                 chunkType = "tEXt";
-                separatorLength = 1;
-
-                writeBuffer[0] = 0; // null separator
+                separator = new byte[]{
+                        0, // null separator
+                };
             }
         } else {
             chunkType = "iTXt";
-            separatorLength = 5;
-
-            writeBuffer[0] = 0;     // null separator
-            writeBuffer[1] = (byte) (compress ? 1 : 0); // compression flag
-            writeBuffer[2] = 0;     // compression method
-            writeBuffer[3] = 0;     // null separator
-            writeBuffer[4] = 0;     // null separator
+            separator = new byte[] {
+                    0, // null separator
+                    (byte) (compress ? 1 : 0), // compression flag
+                    0, // compression method
+                    0, // null separator
+                    0  // null separator
+            };
         }
 
-        beginChunk(chunkType, keywordBytes.length + separatorLength + textBytesLength);
+        beginChunk(chunkType, keywordBytes.length + separator.length + textBytesLength);
         writeBytes(keywordBytes);
-        writeBytes(writeBuffer, 0, separatorLength);
+        writeBytes(separator);
         writeBytes(textBytes, 0, textBytesLength);
         endChunk();
     }
