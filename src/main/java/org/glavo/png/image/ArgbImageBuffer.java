@@ -45,4 +45,8 @@ public final class ArgbImageBuffer implements ArgbImage {
     public void setArgb(int x, int y, int a, int r, int g, int b) {
         setArgb(x, y, (a << 24) | (r << 16) | (g << 8) | b);
     }
+
+    public void setRgb(int x, int y, int r, int g, int b) {
+        setArgb(x, y, 0xff, r, g, b);
+    }
 }
