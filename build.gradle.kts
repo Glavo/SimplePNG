@@ -1,3 +1,9 @@
+buildscript {
+    repositories { mavenCentral() }
+
+    dependencies { classpath("org.glavo.kala:kala-platform:0.10.0") }
+}
+
 plugins {
     id("java-library")
     id("maven-publish")
@@ -111,6 +117,33 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
+}
+
+// Setup JavaFX
+run {
+    var classifer = when (kala.platform.Platform.CURRENT_PLATFORM.operatingSystem) {
+        kala.platform.OperatingSystem.LINUX -> "linux"
+        kala.platform.OperatingSystem.WINDOWS -> "win"
+        kala.platform.OperatingSystem.MACOS -> "mac"
+        else -> return@run
+    }
+
+    when (kala.platform.Platform.CURRENT_PLATFORM.architecture) {
+        kala.platform.Architecture.X86_64 -> {}
+        kala.platform.Architecture.X86 -> classifer += "-x86"
+        kala.platform.Architecture.AARCH64 -> classifer += "-aarch64"
+        kala.platform.Architecture.ARM -> if (classifer == "linux") classifer = "linux-arm32-monocle" else return@run
+        else -> return@run
+    }
+
+    val modules = listOf("base", "graphics")
+
+    dependencies {
+        for (module in modules) {
+            testImplementation("org.openjfx:javafx-$module:17.0.2:$classifer")
+
+        }
+    }
 }
 
 // ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository

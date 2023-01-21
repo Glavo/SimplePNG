@@ -1,4 +1,3 @@
 dependencies {
-    api(rootProject)
-    compileOnly("org.openjfx:javafx-graphics:17:linux")
+    compileOnly("org.openjfx:javafx-graphics:17.0.2:linux")
 }
