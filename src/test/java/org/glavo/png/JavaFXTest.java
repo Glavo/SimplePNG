@@ -2,13 +2,16 @@ package org.glavo.png;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
-import org.junit.jupiter.api.Test;
+import org.glavo.png.image.ArgbImage;
+import org.glavo.png.javafx.PNGJavaFXUtils;
 import org.junit.jupiter.api.condition.DisabledIf;
 
-import java.nio.file.Path;
+import java.io.IOException;
+import java.io.InputStream;
+
 
 @DisabledIf("isDisabled")
-public class JavaFXTest {
+public class JavaFXTest implements BasicTest {
 
     private static boolean disabled = false;
 
@@ -28,4 +31,8 @@ public class JavaFXTest {
     }
 
 
+    @Override
+    public ArgbImage readImage(InputStream input) throws IOException {
+        return PNGJavaFXUtils.asArgbImage(new Image(input));
+    }
 }
