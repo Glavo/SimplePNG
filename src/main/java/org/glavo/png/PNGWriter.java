@@ -14,6 +14,8 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 public final class PNGWriter implements Closeable {
+    public static final int DEFAULT_COMPRESS_LEVEL = Deflater.DEFAULT_COMPRESSION;
+
     private static final int COMPRESS_THRESHOLD = 20;
     private static final byte[] PNG_FILE_HEADER = {
             (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A
@@ -28,11 +30,11 @@ public final class PNGWriter implements Closeable {
     private final byte[] writeBuffer = new byte[8];
 
     public PNGWriter(OutputStream out) {
-        this(out, PNGType.RGBA, Deflater.DEFAULT_COMPRESSION);
+        this(out, PNGType.RGBA, DEFAULT_COMPRESS_LEVEL);
     }
 
     public PNGWriter(OutputStream out, PNGType type) {
-        this(out, type, Deflater.DEFAULT_COMPRESSION);
+        this(out, type, DEFAULT_COMPRESS_LEVEL);
     }
 
     public PNGWriter(OutputStream out, int compressLevel) {

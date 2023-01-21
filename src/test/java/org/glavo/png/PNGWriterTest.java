@@ -3,7 +3,7 @@ package org.glavo.png;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.formats.png.PngImageParser;
-import org.glavo.png.image.AWTArgbImageWrapper;
+import org.glavo.png.imageio.PNGImageIOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -53,7 +53,7 @@ public class PNGWriterTest {
 
         ByteArrayOutputStream temp = new ByteArrayOutputStream();
         try (PNGWriter writer = new PNGWriter(temp, arg.pngType, arg.compressLevel)) {
-            writer.write(new AWTArgbImageWrapper(sourceImage));
+            writer.write(PNGImageIOUtils.asArgbImage(sourceImage));
         }
         targetImage = ImageIO.read(new ByteArrayInputStream(temp.toByteArray()));
 
@@ -89,7 +89,7 @@ public class PNGWriterTest {
             PNGMetadata metadata = new PNGMetadata()
                     .setCreationTime(LocalDateTime.of(2023, 1, 12, 12, 0))
                     .setAuthor("Glavo");
-            writer.write(new AWTArgbImageWrapper(ImageIO.read(PNGWriterTest.class.getResource(defaultTestFile)))
+            writer.write(PNGImageIOUtils.asArgbImage(ImageIO.read(PNGWriterTest.class.getResource(defaultTestFile)))
                     .withMetadata(metadata));
         }
 
