@@ -26,7 +26,7 @@ It can be easily used with Android or JavaFX.
 Maven:
 ```xml
 <dependency>
-  <groupId>org.glavo.kala</groupId>
+  <groupId>org.glavo</groupId>
   <artifactId>simple-png</artifactId>
   <version>0.1.1</version>
 </dependency>
@@ -34,7 +34,7 @@ Maven:
 
 Gradle:
 ```kotlin
-implementation("org.glavo.kala:simple-png:0.1.1")
+implementation("org.glavo:simple-png:0.1.1")
 ```
 
 ## Usage
