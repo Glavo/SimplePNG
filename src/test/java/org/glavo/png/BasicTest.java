@@ -24,7 +24,7 @@ public interface BasicTest {
     }
 
     String defaultTestFile = "minecraft.png";
-    String[] testFiles = {defaultTestFile, "skin.png", "background.jpg"};
+    String[] testFiles = {defaultTestFile, "skin.png", "background.jpg", "rgba.png"};
 
     static Stream<Argument> testFiles() {
         return Arrays.stream(testFiles)
