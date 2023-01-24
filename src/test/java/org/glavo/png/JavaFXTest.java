@@ -30,7 +30,6 @@ public class JavaFXTest implements BasicTest {
         return disabled;
     }
 
-
     @Override
     public ArgbImage readImage(InputStream input) throws IOException {
         return PNGJavaFXUtils.asArgbImage(new Image(input));

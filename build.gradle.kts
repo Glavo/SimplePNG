@@ -23,12 +23,16 @@ allprojects {
     }
 
     group = "org.glavo"
-    version = "0.2.0" + "-SNAPSHOT"
+    version = "0.2.0"// + "-SNAPSHOT"
     description = "Minimal library for creating PNG images"
 
     java {
         withSourcesJar()
-        withJavadocJar()
+    }
+
+    val javadocJar = tasks.create<Jar>("javadocJar") {
+        group = "build"
+        archiveClassifier.set("javadoc")
     }
 
     tasks.compileJava {
@@ -67,6 +71,7 @@ allprojects {
                 artifactId = project.name
 
                 from(components["java"])
+                artifact(javadocJar)
 
                 pom {
                     name.set(project.name)
