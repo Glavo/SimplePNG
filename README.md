@@ -28,13 +28,28 @@ Maven:
 <dependency>
   <groupId>org.glavo</groupId>
   <artifactId>simple-png</artifactId>
-  <version>0.1.1</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
 Gradle:
 ```kotlin
-implementation("org.glavo:simple-png:0.1.1")
+implementation("org.glavo:simple-png:0.2.0")
+```
+
+If you want to use it for JavaFX, you can include additional dependencies:
+
+```xml
+<dependency>
+  <groupId>org.glavo</groupId>
+  <artifactId>simple-png-javafx</artifactId>
+  <version>0.2.0</version>
+</dependency>
+```
+
+Gradle:
+```kotlin
+implementation("org.glavo:simple-png-javafx:0.2.0")
 ```
 
 ## Usage
@@ -74,11 +89,8 @@ for (int x = 0; x < 250; x++) {
     }
 }
 
-// Wrapper for java.awt.image.BufferedImage
-ArgbImage awtImage = new AWTArgbImageWrapper(ImageIO.read("image.jpg"));
-
 // Wrapper for javafx.scene.image.Image
-ArgbImage fxImage = new JavaFXArgbImageWrapper(new Image("image.jpg"));
+ArgbImage fxImage = PNGJavaFXUtils.asArgbImage(new Image("image.jpg"));
 ```
 
 ### `PNGWriter`
