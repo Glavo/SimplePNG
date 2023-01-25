@@ -59,13 +59,13 @@ public interface BasicTest {
     @MethodSource("testFiles")
     default void testWriteArgbFile(Argument arg) throws Exception {
         ArgbImage sourceImage;
-        try (InputStream input = Files.newInputStream(arg.file)) {
+        try (InputStream input = Files.newInputStream(arg.file())) {
             sourceImage = readImage(input);
         }
         BufferedImage targetImage;
 
         ByteArrayOutputStream temp = new ByteArrayOutputStream();
-        try (PNGWriter writer = new PNGWriter(temp, arg.pngType, arg.compressLevel)) {
+        try (PNGWriter writer = new PNGWriter(temp, arg.pngType(), arg.compressLevel())) {
             writer.write(sourceImage);
         }
         targetImage = ImageIO.read(new ByteArrayInputStream(temp.toByteArray()));
@@ -86,7 +86,7 @@ public interface BasicTest {
                 assertEquals((byte) (sourceColor >>> 0), (byte) (targetColor >>> 0));       // Blue
 
                 // Alpha
-                if (arg.pngType != PNGType.RGB) {
+                if (arg.pngType() != PNGType.RGB) {
                     assertEquals((byte) (sourceColor >>> 24), (byte) (targetColor >>> 24));
                 } else {
                     assertEquals((byte) 0xFF, (byte) (targetColor >>> 24));

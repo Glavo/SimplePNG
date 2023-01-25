@@ -23,7 +23,7 @@ allprojects {
     }
 
     group = "org.glavo"
-    version = "0.2.0"// + "-SNAPSHOT"
+    version = "0.3.0" + "-SNAPSHOT"
     description = "Minimal library for creating PNG images"
 
     java {
@@ -146,7 +146,6 @@ run {
     dependencies {
         for (module in modules) {
             testImplementation("org.openjfx:javafx-$module:17.0.2:$classifer")
-
         }
     }
 }

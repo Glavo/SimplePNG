@@ -9,6 +9,7 @@ import org.glavo.png.image.ArgbImageWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -39,15 +40,15 @@ public final class PNGJavaFXUtils {
         writeImage(image, Files.newOutputStream(file), type, compressLevel);
     }
 
-    public static byte[] writeImageToArray(Image image) throws IOException {
+    public static byte[] writeImageToArray(Image image) {
         return writeImageToArray(image, PNGType.RGBA, PNGWriter.DEFAULT_COMPRESS_LEVEL);
     }
 
-    public static byte[] writeImageToArray(Image image, PNGType type) throws IOException {
+    public static byte[] writeImageToArray(Image image, PNGType type) {
         return writeImageToArray(image, type, PNGWriter.DEFAULT_COMPRESS_LEVEL);
     }
 
-    public static byte[] writeImageToArray(Image image, PNGType type, int compressLevel) throws IOException {
+    public static byte[] writeImageToArray(Image image, PNGType type, int compressLevel) {
         int estimatedSize = (int) (
                 image.getWidth() * image.getHeight()
                         * (type == PNGType.RGB ? 3 : 4)
@@ -57,9 +58,13 @@ public final class PNGJavaFXUtils {
             estimatedSize /= 2;
         }
 
-        ByteArrayOutputStream temp = new ByteArrayOutputStream(Integer.max(estimatedSize, 32));
-        writeImage(image, temp, type, compressLevel);
-        return temp.toByteArray();
+        try {
+            ByteArrayOutputStream temp = new ByteArrayOutputStream(Integer.max(estimatedSize, 32));
+            writeImage(image, temp, type, compressLevel);
+            return temp.toByteArray();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private static void writeImage(Image image, OutputStream out) throws IOException {
