@@ -23,7 +23,7 @@ allprojects {
     }
 
     group = "org.glavo"
-    version = "0.3.0"// + "-SNAPSHOT"
+    version = "0.4.0" + "-SNAPSHOT"
     description = "Minimal library for creating PNG images"
 
     java {
