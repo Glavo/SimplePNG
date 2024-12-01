@@ -28,13 +28,13 @@ Maven:
 <dependency>
   <groupId>org.glavo</groupId>
   <artifactId>simple-png</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
 Gradle:
 ```kotlin
-implementation("org.glavo:simple-png:0.2.0")
+implementation("org.glavo:simple-png:0.3.0")
 ```
 
 If you want to use it for JavaFX, you can include additional dependencies:
@@ -43,13 +43,13 @@ If you want to use it for JavaFX, you can include additional dependencies:
 <dependency>
   <groupId>org.glavo</groupId>
   <artifactId>simple-png-javafx</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
 Gradle:
 ```kotlin
-implementation("org.glavo:simple-png-javafx:0.2.0")
+implementation("org.glavo:simple-png-javafx:0.3.0")
 ```
 
 ## Usage
@@ -141,3 +141,15 @@ If you like this library, donating to me is my greatest support!
 Due to payment method restrictions, donations are currently only supported through payment channels in Chinese mainland (微信，支付宝，爱发电等).
 
 Here are the ways to donate: [捐赠支持 Glavo](https://donate.glavo.site/)
+
+## Especially thanks
+
+<img alt="PLCT Logo" src="./PLCT.svg" width="200" height="200">
+
+Thanks to [PLCT Lab](https://plctlab.org) for supporting me.
+
+![IntelliJ IDEA logo](https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.svg)
+
+This project is developed using JetBrains IDEA.
+Thanks to JetBrains for providing me with a free license, which is a strong support for me.
+
