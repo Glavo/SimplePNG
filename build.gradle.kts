@@ -8,7 +8,7 @@ plugins {
     id("java-library")
     id("maven-publish")
     id("signing")
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("org.glavo.load-maven-publish-properties") version "0.1.0"
     id("org.glavo.compile-module-info-plugin") version "2.0"
 }
@@ -30,7 +30,7 @@ allprojects {
         withSourcesJar()
     }
 
-    val javadocJar = tasks.create<Jar>("javadocJar") {
+    val javadocJar by tasks.registering(Jar::class) {
         group = "build"
         archiveClassifier.set("javadoc")
     }
@@ -154,6 +154,9 @@ run {
 nexusPublishing {
     repositories {
         sonatype {
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+
             stagingProfileId.set(rootProject.ext["sonatypeStagingProfileId"].toString())
             username.set(rootProject.ext["sonatypeUsername"].toString())
             password.set(rootProject.ext["sonatypePassword"].toString())
